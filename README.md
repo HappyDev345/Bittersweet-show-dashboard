@@ -1,17 +1,18 @@
-# Bitter Sweet Show Dashboard
+# BITTER SWEET — LX / SHOW DASHBOARD V2
 
-A lightweight browser dashboard for a second laptop/monitor beside the lighting desk.
+Open index.html in Chrome/Edge/Firefox.
 
-Features:
-- live clock
-- show elapsed timer
-- microphone/input level meter
-- peak reading
-- live spectrum
-- current scene/cue
-- next cue
-- quick notes saved in the browser
+Designed from the uploaded master call sheet. V2 includes:
+- live time/date
+- show timer
+- countdown to show call
+- live audio RMS/peak meter and spectrum
+- actual Bitter Sweet cue sequence and scenes
+- next/previous cue controls
+- current cue details: look, mics, music, CYC, set, side screen
+- scene selector
+- searchable cue navigator
+- keyboard: Left/Right = previous/next cue, M = mark done
+- persistent show time and notes in browser storage
 
-Open `index.html` in Chrome/Edge/Firefox and allow microphone access when prompted.
-
-For a real console/system audio feed, route the appropriate audio source into the laptop/interface rather than relying on the laptop microphone.
+Note: audio is browser microphone/input metering, not direct Eos/console cue integration.

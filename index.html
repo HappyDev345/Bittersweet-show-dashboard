@@ -3,99 +3,145 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bitter Sweet — Show Dashboard</title>
+<title>Bitter Sweet — LX Dashboard V2</title>
 <style>
-:root{--bg:#08090d;--panel:#11131a;--line:#252936;--text:#f2f4f8;--muted:#9aa2b1;--accent:#b8ff5a}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line)}
-h1{font-size:24px;margin:0} .sub{color:var(--muted);font-size:12px;margin-top:4px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px;max-width:1500px;margin:auto}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-height:150px}
-.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em}
-.big{font-size:52px;font-weight:700;letter-spacing:-.04em;margin:10px 0}
-.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.wide{grid-column:1/-1}
-button,input{background:#191c25;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px 12px}
-button{cursor:pointer}button:hover{border-color:#555d70}
-.meter{height:18px;background:#242832;border-radius:9px;overflow:hidden;margin-top:15px}
-.fill{height:100%;width:0%;background:linear-gradient(90deg,#6bd34b,#f5d84e,#ff6b6b);transition:width .08s}
-.stat{font-size:26px;font-weight:650}.muted{color:var(--muted)}
-textarea{width:100%;height:90px;background:#0d0f14;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;resize:vertical}
-#spectrum{width:100%;height:130px;background:#0b0d12;border-radius:10px;margin-top:12px}
-.small{font-size:12px}.pill{padding:5px 9px;border:1px solid var(--line);border-radius:99px;color:var(--muted)}
-@media(max-width:850px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.big{font-size:42px}}
+:root{--bg:#07080b;--panel:#101219;--panel2:#151821;--line:#262b36;--text:#f3f5f8;--muted:#9ba3b1;--accent:#baff55;--warn:#ffd35a;--danger:#ff7272}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#141821 0,#07080b 45%);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(7,8,11,.93);backdrop-filter:blur(10px);z-index:5}
+.brand h1{margin:0;font-size:21px;letter-spacing:.03em}.brand small{color:var(--muted);font-size:11px;letter-spacing:.12em}.clock{text-align:right}.clock .time{font-size:28px;font-weight:750}.clock .date{font-size:11px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;padding:14px;max-width:1500px;margin:auto}.wide{grid-column:1/-1}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 12px 35px rgba(0,0,0,.18)}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.current{display:flex;align-items:flex-end;gap:16px}.cue{font-size:54px;font-weight:800;letter-spacing:-.05em;margin:5px 0}.scene{font-size:19px;font-weight:650}.act{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:.12em}
+.look{font-size:16px;margin-top:12px;line-height:1.4}.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.box{background:#0b0d12;border:1px solid var(--line);border-radius:10px;padding:11px}.box b{display:block;font-size:12px;margin-top:4px;line-height:1.3}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button,select,input{background:#161a22;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px 11px;font:inherit}button{cursor:pointer}button:hover{border-color:#596173}button.primary{background:#24310f;border-color:#5f7a2a;color:#e8ffc0}.tiny{padding:7px 9px;font-size:12px}
+.timer{font-size:43px;font-weight:800;letter-spacing:-.04em}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.status{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:var(--muted)}
+.meter{height:16px;background:#252a34;border-radius:8px;overflow:hidden;margin:11px 0 6px}.fill{height:100%;width:0;background:linear-gradient(90deg,#68d84f,#ffe05c,#ff6666)}
+canvas{display:block;width:100%;height:130px;background:#0b0d12;border:1px solid var(--line);border-radius:10px}
+.progress{height:8px;background:#20242d;border-radius:6px;overflow:hidden;margin-top:10px}.progress div{height:100%;background:var(--accent);width:0}
+.search{width:100%}.cue-list{max-height:410px;overflow:auto;margin-top:10px;border-top:1px solid var(--line)}.cueitem{padding:10px 8px;border-bottom:1px solid var(--line);cursor:pointer}.cueitem:hover{background:#171a22}.cueitem.active{background:#1a2113;border-left:3px solid var(--accent)}.cueitem strong{display:inline-block;width:80px}.cueitem span{color:var(--muted);font-size:12px}
+.note{width:100%;min-height:110px;background:#0b0d12;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;resize:vertical}
+.count{font-size:22px;font-weight:700}.muted{color:var(--muted)}.footer{padding:0 14px 18px;max-width:1500px;margin:auto;color:#747c8a;font-size:11px}
+@media(max-width:950px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.cue{font-size:43px}.meta{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
- <div><h1>BITTER SWEET</h1><div class="sub">SHOW DASHBOARD • LIGHTING DESK</div></div>
- <div id="clock" class="big" style="font-size:28px;margin:0">--:--:--</div>
+ <div class="brand"><h1>BITTER SWEET</h1><small>NAOMI’S STORY • LX / SHOW DASHBOARD V2</small></div>
+ <div class="clock"><div class="time" id="clock">--:--:--</div><div class="date" id="date">---</div></div>
 </header>
+
 <main class="grid">
- <section class="card">
-  <div class="label">Show timer</div><div id="showTimer" class="big">00:00:00</div>
-  <div class="row"><button onclick="startTimer()">START</button><button onclick="pauseTimer()">PAUSE</button><button onclick="resetTimer()">RESET</button><span class="pill" id="timerState">STOPPED</span></div>
- </section>
- <section class="card">
-  <div class="label">Audio level</div>
-  <div class="row"><div id="db" class="big">-- dB</div><div class="muted">live input</div></div>
-  <div class="meter"><div id="fill" class="fill"></div></div>
-  <div class="row" style="margin-top:12px"><span>Peak <b id="peak">--</b></span><span>Permission/input required</span></div>
- </section>
- <section class="card wide">
-  <div class="label">Spectrum</div><canvas id="spectrum"></canvas>
- </section>
- <section class="card">
-  <div class="label">Current scene / cue</div>
-  <div class="row" style="margin-top:12px"><input id="scene" value="Opening"><input id="cue" value="LX 1"></div>
-  <div class="muted small" style="margin-top:10px">Edit these during the show. They save automatically in this browser.</div>
- </section>
- <section class="card">
-  <div class="label">Next cue / note</div>
-  <input id="next" value="Next: LX 2 — Standby" style="width:100%;margin-top:12px">
-  <div class="row" style="margin-top:12px"><button onclick="markDone()">✓ Mark done</button><span id="done" class="pill">READY</span></div>
- </section>
- <section class="card wide">
-  <div class="label">Quick notes</div>
-  <textarea id="notes" placeholder="Show notes, reminders, cue changes..."></textarea>
- </section>
+<section class="card">
+ <div class="label">Live cue</div>
+ <div class="current">
+  <div><div class="act" id="act"></div><div class="cue" id="cue"></div></div>
+  <div><div class="scene" id="scene"></div><div class="muted" id="cueIndex"></div></div>
+ </div>
+ <div class="look" id="look"></div>
+ <div class="meta">
+   <div class="box"><div class="label">Mics</div><b id="mics">—</b></div>
+   <div class="box"><div class="label">Music</div><b id="music">—</b></div>
+   <div class="box"><div class="label">CYC</div><b id="cyc">—</b></div>
+   <div class="box"><div class="label">Set / action</div><b id="set">—</b></div>
+   <div class="box"><div class="label">Side screen</div><b id="screen">—</b></div>
+   <div class="box"><div class="label">Next cue</div><b id="nextCue">—</b></div>
+ </div>
+ <div class="controls">
+  <button class="primary" onclick="prevCue()">← PREV</button><button class="primary" onclick="nextCue()">NEXT →</button>
+  <button onclick="toggleAuto()">AUTO</button><button onclick="mark()">✓ MARK DONE</button>
+  <span class="status" id="markStatus">READY</span>
+ </div>
+ <div class="progress"><div id="cueProgress"></div></div>
+</section>
+
+<section class="card">
+ <div class="label">Show timer</div>
+ <div class="timer" id="showTimer">00:00:00</div>
+ <div class="controls"><button class="primary" onclick="startTimer()">START</button><button onclick="pauseTimer()">PAUSE</button><button onclick="resetTimer()">RESET</button><span class="status" id="timerState">STOPPED</span></div>
+ <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+ <div class="label">Until show call</div>
+ <div class="row"><input id="showTime" type="time" value="19:00"><button onclick="saveShowTime()">SET</button></div>
+ <div class="count" id="showCountdown" style="margin-top:10px">—</div>
+</section>
+
+<section class="card">
+ <div class="label">Audio monitor</div>
+ <div class="row"><div class="cue" id="db" style="font-size:43px">NO INPUT</div><span class="muted">RMS</span></div>
+ <div class="meter"><div class="fill" id="fill"></div></div>
+ <div class="row"><span>Peak <b id="peak">—</b></span><button class="tiny" onclick="audioStart()">ENABLE AUDIO</button></div>
+ <canvas id="spectrum"></canvas>
+ <div class="muted" style="font-size:11px;margin-top:8px">Browser mic/input metering. For desk audio, use an appropriate audio interface/route.</div>
+</section>
+
+<section class="card">
+ <div class="label">Scene mode</div>
+ <div class="row" style="margin-top:10px">
+  <select id="sceneSelect" onchange="jumpScene(this.value)" style="flex:1"></select>
+ </div>
+ <div class="meta">
+  <div class="box"><div class="label">Current</div><b id="sceneCurrent">—</b></div>
+  <div class="box"><div class="label">Following</div><b id="sceneNext">—</b></div>
+ </div>
+</section>
+
+<section class="card wide">
+ <div class="label">Cue navigator</div>
+ <input class="search" id="search" placeholder="Search cue, scene, music, mics, CYC, set..." oninput="renderList()">
+ <div class="cue-list" id="cueList"></div>
+</section>
+
+<section class="card wide">
+ <div class="label">Quick show notes</div>
+ <textarea id="notes" class="note" placeholder="Cue changes, operator notes, reminders, things to fix..."></textarea>
+</section>
 </main>
+<div class="footer">Technical dashboard built from the uploaded BITTERSWEET — MASTER CALL SHEET. Cue numbering follows the source, including the Act 3 jump from LX 60 to LX 104.</div>
+
 <script>
+const CUES = [{"id": "Intro-1", "act": "Intro", "scene": "Intro", "cue": "LX 1", "type": "LX", "look": "House lights up; spot on sign; movers point toward students’ artworks", "mics": "", "music": "Introduction / Overture", "cyc": "", "set": "Curtains closed", "screen": ""}, {"id": "Intro-2", "act": "Intro", "scene": "Intro", "cue": "LX 2", "type": "LX", "look": "House lights down; front apron; spot remains on sign", "mics": "Heidi handheld", "music": "Introduction", "cyc": "", "set": "Curtains closed", "screen": ""}, {"id": "Intro-3", "act": "Intro", "scene": "Intro", "cue": "LX 3", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "", "screen": ""}, {"id": "Intro-4", "act": "Intro", "scene": "Intro", "cue": "LX 4", "type": "LX", "look": "Band pit", "mics": "", "music": "Overture", "cyc": "", "set": "", "screen": ""}, {"id": "A1S1-5", "act": "Act 1", "scene": "1 — Are We There Yet?", "cue": "LX 5", "type": "LX", "look": "Apron & extensions", "mics": "Elimelech, Mahlon, Chilon, Naomi", "music": "", "cyc": "", "set": "Orpah & Year 2 ready behind curtain", "screen": ""}, {"id": "A1S1-6", "act": "Act 1", "scene": "1 — Are We There Yet?", "cue": "LX 6", "type": "LX", "look": "Blackout", "mics": "Elimelech, Mahlon, Chilon, Naomi", "music": "", "cyc": "", "set": "End scene", "screen": ""}, {"id": "A1S2-7", "act": "Act 1", "scene": "2 — Welcome to Moab Town", "cue": "LX 7", "type": "LX", "look": "Full stage, pink gobo & all extensions", "mics": "Orpah", "music": "Item 1 — Moab Town Throwdown Intro / Whole Band", "cyc": "1. Moab Town", "set": "Curtains open — fast pull", "screen": "Year 2 Moab Town Throwdown w lyrics"}, {"id": "A1S2-8", "act": "Act 1", "scene": "2 — Welcome to Moab Town", "cue": "LX 8", "type": "LX", "look": "Full stage + extensions", "mics": "Mahlon, Chilon, Elimelech, Naomi, Ruth", "music": "", "cyc": "1. Moab Town", "set": "", "screen": ""}, {"id": "A1S2-9", "act": "Act 1", "scene": "2 — Welcome to Moab Town", "cue": "LX 9", "type": "LX", "look": "Full stage + extensions & aisles", "mics": "", "music": "Item 2 — Wedding Song / Happy", "cyc": "1. Moab Town", "set": "", "screen": "Year 3 Wedding Song w lyrics"}, {"id": "A1S2-10", "act": "Act 1", "scene": "2 — Welcome to Moab Town", "cue": "LX 10", "type": "LX", "look": "Dim stage; spots on either extensions", "mics": "", "music": "", "cyc": "1. Moab Town", "set": "Wedding vows", "screen": ""}, {"id": "A1S2-11", "act": "Act 1", "scene": "2 — Welcome to Moab Town", "cue": "LX 11", "type": "LX", "look": "Full stage", "mics": "", "music": "Wedding Song — continuation", "cyc": "1. Moab Town", "set": "", "screen": ""}, {"id": "A1S2-12/13", "act": "Act 1", "scene": "2 — Welcome to Moab Town", "cue": "LX 12 / 13", "type": "LX", "look": "Blackout", "mics": "", "music": "Vamping — Happy", "cyc": "", "set": "Curtains close", "screen": ""}, {"id": "A1S3-14", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 14", "type": "LX", "look": "Centre apron, blue", "mics": "Naomi", "music": "", "cyc": "", "set": "Year 6 ready behind curtains", "screen": ""}, {"id": "A1S3-15/16", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 15 / 16", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "", "screen": "Video 1"}, {"id": "A1S3-17", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 17", "type": "LX", "look": "Centre apron, blue", "mics": "Naomi", "music": "", "cyc": "", "set": "", "screen": ""}, {"id": "A1S3-18/19", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 18 / 19", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "", "screen": "Video 2"}, {"id": "A1S3-20", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 20", "type": "LX", "look": "Centre apron, blue", "mics": "Naomi", "music": "", "cyc": "", "set": "", "screen": ""}, {"id": "A1S3-21/22", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 21 / 22", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "", "screen": "Video 3"}, {"id": "A1S3-23", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 23", "type": "LX", "look": "Centre apron, blue", "mics": "Naomi", "music": "", "cyc": "", "set": "Naomi runs off", "screen": ""}, {"id": "A1S3-24/25", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 24 / 25", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "Curtains open", "screen": ""}, {"id": "A1S3-26", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 26", "type": "LX", "look": "Full stage + extensions + aisles — blues and purples", "mics": "", "music": "Item 3 — Hey Brother", "cyc": "1. Moab Town", "set": "", "screen": "Year 6 Hey Brother Lyrics"}, {"id": "A1S3-27/28", "act": "Act 1", "scene": "3 — Tragedy Strikes", "cue": "LX 27 / 28", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "Curtains close", "screen": ""}, {"id": "A1S4-29", "act": "Act 1", "scene": "4 — Naomi’s Decision", "cue": "LX 29", "type": "LX", "look": "Apron + EXTR", "mics": "Naomi, Orpah, Ruth", "music": "", "cyc": "", "set": "Chair; Naomi brings 2 suitcases; Year 1 ready backstage", "screen": ""}, {"id": "A1S4-30", "act": "Act 1", "scene": "4 — Naomi’s Decision", "cue": "LX 30", "type": "LX", "look": "Full stage + extensions", "mics": "", "music": "Item 4 — Achy Breaky Heart", "cyc": "1. Moab Town", "set": "Curtains open", "screen": "Year 1 Achy Breaky Heart w Lyrics"}, {"id": "A1S4-31/32", "act": "Act 1", "scene": "4 — Naomi’s Decision", "cue": "LX 31 / 32", "type": "LX", "look": "Blackout", "mics": "", "music": "Vamping — Achy Breaky Heart", "cyc": "", "set": "Full set change: saloon, windmill, bench, fence & barrel", "screen": ""}, {"id": "A2S1-33", "act": "Act 2", "scene": "1 — Doing Business", "cue": "LX 33", "type": "LX", "look": "Full stage", "mics": "Mayor, Zilman, Boaz, Naomi", "music": "Country music instrumental", "cyc": "2. Bethville", "set": "", "screen": ""}, {"id": "A2S1-34", "act": "Act 2", "scene": "1 — Doing Business", "cue": "LX 34", "type": "LX", "look": "Main stage fade; centre catwalk on Naomi", "mics": "Townspeople ON", "music": "", "cyc": "2. Bethville", "set": "Naomi enters from Moab Town", "screen": ""}, {"id": "A2S1-35/36", "act": "Act 2", "scene": "1 — Doing Business", "cue": "LX 35 / 36", "type": "LX", "look": "Blackout", "mics": "", "music": "Vamping — slow Achy Breaky Heart", "cyc": "", "set": "Strike Bethville set (leave windmill & fence); cornfields on", "screen": ""}, {"id": "A2S2-37", "act": "Act 2", "scene": "2 — A Distraction", "cue": "LX 37", "type": "LX", "look": "SL extension, afternoon/evening full stage", "mics": "Ticca, Boaz, Ruth, Naomi", "music": "", "cyc": "3. Boaz’s Property", "set": "Year 4 ready backstage", "screen": ""}, {"id": "A2S2-38", "act": "Act 2", "scene": "2 — A Distraction", "cue": "LX 38", "type": "LX", "look": "Full stage lights up", "mics": "Ticca, Boaz, Ruth, Naomi", "music": "Piano bit as workers pop heads out", "cyc": "3. Boaz’s Property", "set": "", "screen": ""}, {"id": "A2S2-39", "act": "Act 2", "scene": "2 — A Distraction", "cue": "LX 39", "type": "LX", "look": "Stage lights fade; EXTR up", "mics": "Ticca, Boaz, Ruth, Naomi", "music": "", "cyc": "3. Boaz’s Property", "set": "", "screen": ""}, {"id": "A2S2-40/41", "act": "Act 2", "scene": "2 — A Distraction", "cue": "LX 40 / 41", "type": "LX", "look": "Blackout", "mics": "", "music": "Vamping — Survive", "cyc": "", "set": "Strike cornfields", "screen": ""}, {"id": "A2S2-42", "act": "Act 2", "scene": "2 — A Distraction", "cue": "LX 42", "type": "LX", "look": "Full stage + extensions + aisles", "mics": "", "music": "Item 5 — Survive", "cyc": "Boaz’s Property", "set": "Bethville — Saloon, Windmill, Bench, Barrel", "screen": "Year 4 Lyrics"}, {"id": "A2S2-43/44", "act": "Act 2", "scene": "2 — A Distraction", "cue": "LX 43 / 44", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "Bethville — Saloon, Windmill, Bench, Barrel", "screen": ""}, {"id": "A2S3-45", "act": "Act 2", "scene": "3 — Fall in Line", "cue": "LX 45", "type": "LX", "look": "Full stage", "mics": "Mayor, Zilman, Boaz", "music": "", "cyc": "Bethville", "set": "", "screen": ""}, {"id": "A2S3-46/47", "act": "Act 2", "scene": "3 — Fall in Line", "cue": "LX 46 / 47", "type": "LX", "look": "Blackout", "mics": "", "music": "", "cyc": "", "set": "Curtains close; strike Bethville (leave windmill & fence); Kindy ready", "screen": ""}, {"id": "A2S4-48", "act": "Act 2", "scene": "4 — Love Is In The Air", "cue": "LX 48", "type": "LX", "look": "Apron lights", "mics": "Boaz & Ruth", "music": "Tension music", "cyc": "", "set": "Visual bandit rescue sequence", "screen": ""}, {"id": "A2S4-49", "act": "Act 2", "scene": "4 — Love Is In The Air", "cue": "LX 49", "type": "LX", "look": "Extension right", "mics": "Boaz & Ruth", "music": "", "cyc": "", "set": "Naomi waiting on extension", "screen": ""}, {"id": "A2S4-50", "act": "Act 2", "scene": "4 — Love Is In The Air", "cue": "LX 50", "type": "LX", "look": "Catwalk", "mics": "Boaz & Ruth", "music": "", "cyc": "", "set": "", "screen": ""}, {"id": "A2S4-51/52", "act": "Act 2", "scene": "4 — Love Is In The Air", "cue": "LX 51 / 52", "type": "LX", "look": "Fade to blackout", "mics": "", "music": "", "cyc": "", "set": "Curtains open", "screen": ""}, {"id": "A2S4-53", "act": "Act 2", "scene": "4 — Love Is In The Air", "cue": "LX 53", "type": "LX", "look": "Full stage — pink gobo — bubble machine?", "mics": "", "music": "Item 6 — Love is in the air", "cyc": "Bethville", "set": "", "screen": "Kindy — Love is in the air lyrics"}, {"id": "A2S4-54/55", "act": "Act 2", "scene": "4 — Love Is In The Air", "cue": "LX 54 / 55", "type": "LX", "look": "Blackout", "mics": "", "music": "Vamping — Love is in the air", "cyc": "", "set": "Bunting", "screen": ""}, {"id": "A2S5-56", "act": "Act 2", "scene": "5 — Harvest Festival", "cue": "LX 56", "type": "LX", "look": "Full stage", "mics": "Zilman, Boaz", "music": "Recording — Cotton Eye Joe Remix", "cyc": "Harvest Festival", "set": "3 hay bales + wheat fields, bench, lower bunting", "screen": "Dance Troupe"}, {"id": "A2S5-57", "act": "Act 2", "scene": "5 — Harvest Festival", "cue": "LX 57", "type": "LX", "look": "Dim main stage; EXTL apron; blue hue", "mics": "Zilman, Boaz", "music": "Slow country lullaby", "cyc": "Starry Night", "set": "4x campfires brought on", "screen": ""}, {"id": "A2S6-58", "act": "Act 2", "scene": "6 — The Proposal", "cue": "LX 58", "type": "LX", "look": "Full stage + extensions, blue hue", "mics": "Ticca, Boaz & Ruth", "music": "Item 7 — Redeemer", "cyc": "Starry Night", "set": "Curtains open after slow pull; Year 5 set on stage", "screen": "Year 5 Redeemer lyrics"}, {"id": "A2S6-59/60", "act": "Act 2", "scene": "6 — The Proposal", "cue": "LX 59 / 60", "type": "LX", "look": "Blackout", "mics": "Ticca, Boaz & Ruth", "music": "Vamping — Redeemer", "cyc": "", "set": "Bethville — Saloon, Windmill, Barrel, Bench", "screen": ""}, {"id": "A3S1-104", "act": "Act 3", "scene": "1 — Boaz’s Stand", "cue": "LX 104", "type": "LX", "look": "Full stage", "mics": "Mayor, Zilman, Boaz, Elders", "music": "", "cyc": "Bethville", "set": "", "screen": ""}, {"id": "A3S1-105", "act": "Act 3", "scene": "1 — Boaz’s Stand", "cue": "LX 105", "type": "LX", "look": "Main stage down; EXTR up", "mics": "Mayor, Zilman, Boaz, Elders", "music": "", "cyc": "Bethville", "set": "", "screen": ""}, {"id": "A3S2-106", "act": "Act 3", "scene": "2 — For Better or Worse", "cue": "LX 106", "type": "LX", "look": "Moody — apron only", "mics": "Naomi & Ruth", "music": "Item 8 — Love Story", "cyc": "", "set": "", "screen": ""}, {"id": "A3S3-107", "act": "Act 3", "scene": "3 — Negotiations", "cue": "LX 107", "type": "LX", "look": "Full stage", "mics": "Mayor, Zilman, Boaz, Ticca, Elders 1, 2 & 3", "music": "", "cyc": "Bethville", "set": "", "screen": ""}, {"id": "A3S3-108", "act": "Act 3", "scene": "3 — Negotiations", "cue": "LX 108", "type": "LX", "look": "Main stage fade; EXTR up", "mics": "Mayor, Zilman, Boaz, Ticca, Elders 1, 2 & 3", "music": "", "cyc": "Bethville", "set": "", "screen": ""}, {"id": "A3S4-109", "act": "Act 3", "scene": "4 — It is finished", "cue": "LX 109", "type": "LX", "look": "Full stage", "mics": "Boaz, Ruth, Ticca, Naomi", "music": "Tune of Happy", "cyc": "", "set": "", "screen": ""}, {"id": "A3S4-110", "act": "Act 3", "scene": "4 — It is finished", "cue": "LX 110", "type": "LX", "look": "Main stage fade; EXTR up", "mics": "Boaz, Ruth, Ticca, Naomi", "music": "Piano — Tune of Rescuer", "cyc": "", "set": "", "screen": ""}, {"id": "A3S4-111", "act": "Act 3", "scene": "4 — It is finished", "cue": "LX 111", "type": "LX", "look": "Full stage", "mics": "Boaz, Ruth, Naomi, Orpah", "music": "Item 9 Finale — Rescuer", "cyc": "", "set": "", "screen": "Rescuer lyrics"}, {"id": "A3S4-112/113", "act": "Act 3", "scene": "4 — It is finished", "cue": "LX 112 / 113", "type": "LX", "look": "Blackout", "mics": "Boaz, Ruth, Naomi, Orpah", "music": "Recording — Cotton Eye Joe", "cyc": "", "set": "Curtains close, then open", "screen": ""}, {"id": "A3S4-114", "act": "Act 3", "scene": "4 — It is finished", "cue": "LX 114", "type": "LX", "look": "Full stage with Rainbow movers?", "mics": "", "music": "Recording — Cotton Eye Joe", "cyc": "", "set": "Curtain call; final house lights later", "screen": "Curtain Call"}];
+let idx=0, marked=false, auto=false;
 const $=id=>document.getElementById(id);
 function pad(n){return String(n).padStart(2,'0')}
-function clock(){let d=new Date();$('clock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`}
-setInterval(clock,250);clock();
+function clock(){const d=new Date();$('clock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;$('date').textContent=d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}
+setInterval(clock,250); clock();
 
-let elapsed=0, running=false,last=0;
-function tick(){if(running){let now=performance.now();elapsed+=now-last;last=now;$('showTimer').textContent=fmt(elapsed)}requestAnimationFrame(tick)}
+function render(){let c=CUES[idx], n=CUES[Math.min(idx+1,CUES.length-1)];
+ $('act').textContent=c.act;$('cue').textContent=c.cue;$('scene').textContent=c.scene;$('cueIndex').textContent=`Cue ${idx+1} of ${CUES.length}`;
+ $('look').textContent=c.look||'—';$('mics').textContent=c.mics||'None listed';$('music').textContent=c.music||'None listed';$('cyc').textContent=c.cyc||'None listed';$('set').textContent=c.set||'None listed';$('screen').textContent=c.screen||'None listed';$('nextCue').textContent=n.cue+' — '+(n.look||n.scene);
+ $('cueProgress').style.width=((idx+1)/CUES.length*100)+'%';
+ $('markStatus').textContent=marked?'DONE ✓':'READY';$('markStatus').style.color=marked?'var(--accent)':'var(--muted)';
+ $('sceneCurrent').textContent=c.scene; $('sceneNext').textContent=n.scene;
+ renderList();
+}
+function nextCue(){if(idx<CUES.length-1){idx++;marked=false;render()}}
+function prevCue(){if(idx>0){idx--;marked=false;render()}}
+function mark(){marked=!marked;render()}
+function toggleAuto(){auto=!auto; document.querySelector('[onclick="toggleAuto()"]').textContent=auto?'AUTO ON':'AUTO';}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')nextCue();if(e.key==='ArrowLeft')prevCue();if(e.key.toLowerCase()==='m')mark()});
+setInterval(()=>{if(auto)nextCue()},5000);
+
+function renderList(){let q=$('search').value.toLowerCase();let el=$('cueList');el.innerHTML='';CUES.forEach((c,i)=>{let hay=[c.cue,c.scene,c.act,c.look,c.mics,c.music,c.cyc,c.set,c.screen].join(' ').toLowerCase();if(q&&!hay.includes(q))return;let d=document.createElement('div');d.className='cueitem'+(i===idx?' active':'');d.innerHTML=`<strong>${c.cue}</strong><span>${c.scene} • ${c.look}</span>`;d.onclick=()=>{idx=i;marked=false;render()};el.appendChild(d)})}
+function scenes(){let seen=[];CUES.forEach(c=>{let key=c.act+'|'+c.scene;if(!seen.includes(key))seen.push(key)});let s=$('sceneSelect');s.innerHTML=seen.map((v,i)=>{let [a,sc]=v.split('|');return `<option value="${i}">${a} — ${sc}</option>`}).join('')}
+function jumpScene(n){let seen=[];CUES.forEach((c,i)=>{let key=c.act+'|'+c.scene;if(!seen.some(x=>x.key===key))seen.push({key,i})});idx=seen[Number(n)].i;marked=false;render()}
+
+let elapsed=0,running=false,last=0;
 function fmt(ms){let s=Math.floor(ms/1000),h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;return `${pad(h)}:${pad(m)}:${pad(s)}`}
+function tick(){if(running){let now=performance.now();elapsed+=now-last;last=now;$('showTimer').textContent=fmt(elapsed)}requestAnimationFrame(tick)}tick();
 function startTimer(){if(!running){running=true;last=performance.now();$('timerState').textContent='RUNNING'}}
 function pauseTimer(){running=false;$('timerState').textContent='PAUSED'}
 function resetTimer(){running=false;elapsed=0;$('showTimer').textContent='00:00:00';$('timerState').textContent='STOPPED'}
-tick();
 
-['scene','cue','next','notes'].forEach(id=>{let el=$(id),k='bs_'+id;el.value=localStorage.getItem(k)||el.value;el.addEventListener('input',()=>localStorage.setItem(k,el.value))});
-function markDone(){$('done').textContent='DONE ✓';setTimeout(()=>{$('done').textContent='READY'},1200)}
+function saveShowTime(){localStorage.setItem('bs_showtime',$('showTime').value);updateCountdown()}
+function updateCountdown(){let t=localStorage.getItem('bs_showtime')||$('showTime').value;let [h,m]=t.split(':').map(Number);let now=new Date(), target=new Date(now);target.setHours(h,m,0,0);if(target<now)target.setDate(target.getDate()+1);let diff=Math.max(0,target-now);$('showCountdown').textContent=fmt(diff)}
+setInterval(updateCountdown,1000);$('showTime').value=localStorage.getItem('bs_showtime')||$('showTime').value;updateCountdown();
+
+$('notes').value=localStorage.getItem('bs_notes')||'';$('notes').addEventListener('input',()=>localStorage.setItem('bs_notes',$('notes').value));
 
 let audioCtx,analyser,data;
-async function audioStart(){
- try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  audioCtx=new AudioContext();let src=audioCtx.createMediaStreamSource(stream);
-  analyser=audioCtx.createAnalyser();analyser.fftSize=2048;src.connect(analyser);
-  data=new Float32Array(analyser.fftSize);draw();
- }catch(e){$('db').textContent='NO INPUT';}
-}
-function draw(){
- requestAnimationFrame(draw);if(!analyser)return;
- analyser.getFloatTimeDomainData(data);let sum=0,peak=0;for(let x of data){sum+=x*x;peak=Math.max(peak,Math.abs(x))}
- let rms=Math.sqrt(sum/data.length),db=rms>0?20*Math.log10(rms):-100;
- $('db').textContent=`${db.toFixed(1)} dB`;$('peak').textContent=peak?`${(20*Math.log10(peak)).toFixed(1)} dB`:'--';
- $('fill').style.width=Math.max(0,Math.min(100,(db+60)/60*100))+'%';
- let c=$('spectrum'),ctx=c.getContext('2d'),w=c.width=c.clientWidth*devicePixelRatio,h=c.height=c.clientHeight*devicePixelRatio;
- ctx.clearRect(0,0,w,h);let bins=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(bins);
- ctx.beginPath();for(let i=0;i<bins.length;i++){let x=i/(bins.length-1)*w,y=h-(bins[i]/255)*h;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.strokeStyle='#b8ff5a';ctx.lineWidth=2*devicePixelRatio;ctx.stroke();
-}
-audioStart();
+async function audioStart(){try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});audioCtx=new AudioContext();const src=audioCtx.createMediaStreamSource(stream);analyser=audioCtx.createAnalyser();analyser.fftSize=2048;src.connect(analyser);data=new Float32Array(analyser.fftSize);draw()}catch(e){$('db').textContent='NO INPUT'}}
+function draw(){requestAnimationFrame(draw);if(!analyser)return;analyser.getFloatTimeDomainData(data);let sum=0,peak=0;for(const x of data){sum+=x*x;peak=Math.max(peak,Math.abs(x))}let rms=Math.sqrt(sum/data.length),db=rms?20*Math.log10(rms):-100;$('db').textContent=`${db.toFixed(1)} dB`;$('peak').textContent=peak?`${(20*Math.log10(peak)).toFixed(1)} dB`:'—';$('fill').style.width=Math.max(0,Math.min(100,(db+60)/60*100))+'%';let c=$('spectrum'),ctx=c.getContext('2d'),w=c.width=c.clientWidth*devicePixelRatio,h=c.height=c.clientHeight*devicePixelRatio;ctx.clearRect(0,0,w,h);let bins=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(bins);ctx.beginPath();for(let i=0;i<bins.length;i++){let x=i/(bins.length-1)*w,y=h-bins[i]/255*h;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.strokeStyle='#baff55';ctx.lineWidth=2*devicePixelRatio;ctx.stroke()}
+
+scenes();render();
 </script>
-</body>
-</html>
+</body></html>
