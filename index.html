@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bitter Sweet — Show Dashboard</title>
+<style>
+:root{--bg:#08090d;--panel:#11131a;--line:#252936;--text:#f2f4f8;--muted:#9aa2b1;--accent:#b8ff5a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--line)}
+h1{font-size:24px;margin:0} .sub{color:var(--muted);font-size:12px;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px;max-width:1500px;margin:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-height:150px}
+.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em}
+.big{font-size:52px;font-weight:700;letter-spacing:-.04em;margin:10px 0}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.wide{grid-column:1/-1}
+button,input{background:#191c25;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px 12px}
+button{cursor:pointer}button:hover{border-color:#555d70}
+.meter{height:18px;background:#242832;border-radius:9px;overflow:hidden;margin-top:15px}
+.fill{height:100%;width:0%;background:linear-gradient(90deg,#6bd34b,#f5d84e,#ff6b6b);transition:width .08s}
+.stat{font-size:26px;font-weight:650}.muted{color:var(--muted)}
+textarea{width:100%;height:90px;background:#0d0f14;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;resize:vertical}
+#spectrum{width:100%;height:130px;background:#0b0d12;border-radius:10px;margin-top:12px}
+.small{font-size:12px}.pill{padding:5px 9px;border:1px solid var(--line);border-radius:99px;color:var(--muted)}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.big{font-size:42px}}
+</style>
+</head>
+<body>
+<header>
+ <div><h1>BITTER SWEET</h1><div class="sub">SHOW DASHBOARD • LIGHTING DESK</div></div>
+ <div id="clock" class="big" style="font-size:28px;margin:0">--:--:--</div>
+</header>
+<main class="grid">
+ <section class="card">
+  <div class="label">Show timer</div><div id="showTimer" class="big">00:00:00</div>
+  <div class="row"><button onclick="startTimer()">START</button><button onclick="pauseTimer()">PAUSE</button><button onclick="resetTimer()">RESET</button><span class="pill" id="timerState">STOPPED</span></div>
+ </section>
+ <section class="card">
+  <div class="label">Audio level</div>
+  <div class="row"><div id="db" class="big">-- dB</div><div class="muted">live input</div></div>
+  <div class="meter"><div id="fill" class="fill"></div></div>
+  <div class="row" style="margin-top:12px"><span>Peak <b id="peak">--</b></span><span>Permission/input required</span></div>
+ </section>
+ <section class="card wide">
+  <div class="label">Spectrum</div><canvas id="spectrum"></canvas>
+ </section>
+ <section class="card">
+  <div class="label">Current scene / cue</div>
+  <div class="row" style="margin-top:12px"><input id="scene" value="Opening"><input id="cue" value="LX 1"></div>
+  <div class="muted small" style="margin-top:10px">Edit these during the show. They save automatically in this browser.</div>
+ </section>
+ <section class="card">
+  <div class="label">Next cue / note</div>
+  <input id="next" value="Next: LX 2 — Standby" style="width:100%;margin-top:12px">
+  <div class="row" style="margin-top:12px"><button onclick="markDone()">✓ Mark done</button><span id="done" class="pill">READY</span></div>
+ </section>
+ <section class="card wide">
+  <div class="label">Quick notes</div>
+  <textarea id="notes" placeholder="Show notes, reminders, cue changes..."></textarea>
+ </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function pad(n){return String(n).padStart(2,'0')}
+function clock(){let d=new Date();$('clock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`}
+setInterval(clock,250);clock();
+
+let elapsed=0, running=false,last=0;
+function tick(){if(running){let now=performance.now();elapsed+=now-last;last=now;$('showTimer').textContent=fmt(elapsed)}requestAnimationFrame(tick)}
+function fmt(ms){let s=Math.floor(ms/1000),h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);s%=60;return `${pad(h)}:${pad(m)}:${pad(s)}`}
+function startTimer(){if(!running){running=true;last=performance.now();$('timerState').textContent='RUNNING'}}
+function pauseTimer(){running=false;$('timerState').textContent='PAUSED'}
+function resetTimer(){running=false;elapsed=0;$('showTimer').textContent='00:00:00';$('timerState').textContent='STOPPED'}
+tick();
+
+['scene','cue','next','notes'].forEach(id=>{let el=$(id),k='bs_'+id;el.value=localStorage.getItem(k)||el.value;el.addEventListener('input',()=>localStorage.setItem(k,el.value))});
+function markDone(){$('done').textContent='DONE ✓';setTimeout(()=>{$('done').textContent='READY'},1200)}
+
+let audioCtx,analyser,data;
+async function audioStart(){
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  audioCtx=new AudioContext();let src=audioCtx.createMediaStreamSource(stream);
+  analyser=audioCtx.createAnalyser();analyser.fftSize=2048;src.connect(analyser);
+  data=new Float32Array(analyser.fftSize);draw();
+ }catch(e){$('db').textContent='NO INPUT';}
+}
+function draw(){
+ requestAnimationFrame(draw);if(!analyser)return;
+ analyser.getFloatTimeDomainData(data);let sum=0,peak=0;for(let x of data){sum+=x*x;peak=Math.max(peak,Math.abs(x))}
+ let rms=Math.sqrt(sum/data.length),db=rms>0?20*Math.log10(rms):-100;
+ $('db').textContent=`${db.toFixed(1)} dB`;$('peak').textContent=peak?`${(20*Math.log10(peak)).toFixed(1)} dB`:'--';
+ $('fill').style.width=Math.max(0,Math.min(100,(db+60)/60*100))+'%';
+ let c=$('spectrum'),ctx=c.getContext('2d'),w=c.width=c.clientWidth*devicePixelRatio,h=c.height=c.clientHeight*devicePixelRatio;
+ ctx.clearRect(0,0,w,h);let bins=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(bins);
+ ctx.beginPath();for(let i=0;i<bins.length;i++){let x=i/(bins.length-1)*w,y=h-(bins[i]/255)*h;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.strokeStyle='#b8ff5a';ctx.lineWidth=2*devicePixelRatio;ctx.stroke();
+}
+audioStart();
+</script>
+</body>
+</html>
